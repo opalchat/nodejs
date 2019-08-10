@@ -1,6 +1,6 @@
 const credentials = require('./.credentials.json');
 
-var Opal = require('./api2.js');
+var Opal = require('./api.js');
 var client = new Opal({ instance:"opalchat", host: "dev.opalchat.com:8080" });
 var api = client.api;
 
