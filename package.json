@@ -1,0 +1,22 @@
+{
+  "name": "opaljs",
+  "version": "1.0.0",
+  "description": "OpalChat JavaScript Client",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/opalchat/nodejs.git"
+  },
+  "author": "opalchat",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/opalchat/nodejs/issues"
+  },
+  "homepage": "https://github.com/opalchat/nodejs#readme",
+  "dependencies": {
+    "ws": "^7.1.2"
+  }
+}

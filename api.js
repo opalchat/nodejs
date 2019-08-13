@@ -1,5 +1,6 @@
 var request = require('request'),
-    querystring = require('querystring');
+    querystring = require('querystring'),
+    WebSocket = require('ws');
  
 
 module.exports = function(config){
@@ -18,8 +19,19 @@ module.exports = function(config){
       $O[key] = value;
     };
     
+    $O.connect = function(config){ 
+        $O.ws = new WebSocket('wss://' 
+            + $O.host  
+            + '/ws?instance_id=' + ($O.instance)
+            + '&api_key=' + ($O.token)); 
+        $O.ws.on('open', (typeof config.open == 'function' ? config.open : console.log)); 
+        $O.ws.on('close', (typeof config.open == 'function' ? config.close : console.log)); 
+        $O.ws.on('message', (typeof config.open == 'function' ? config.message : console.log)); 
+        $O.ws.on('error', (typeof config.open == 'function' ? config.error : console.error));
+    };
+    
     // API Calling.
-    $O.api = function(url, q){
+    $O.request = function(url, q){
             
         var query = {};
         if (q) query = q;
@@ -29,7 +41,6 @@ module.exports = function(config){
                 
                 var cb = function(){};
                 var data = {};
-                
                 
                 if (!d) cb = c;
                 else {
@@ -44,13 +55,13 @@ module.exports = function(config){
                     url:    'https://' 
                             + $O.host 
                             + (url.startsWith('/')?'':'/')  
-                            + 'api/' + url 
+                            + 'rest/' + url 
                             + '?instance_id=' + ($O.instance)
                             + '&api_key=' + ($O.token) 
                             + (q?'&':'') 
                             + querystring.stringify(query),
                     body:   data,
-                    json:   (typeof type !== 'get')
+                    json:   true
                 };
                  
                 request(opts, (RequestError, data) => {
@@ -65,16 +76,16 @@ module.exports = function(config){
             };
             
             return {
-                get:     (data, cb) => { 
+                get: (data, cb) => { 
                     REQ('get', url, data, cb);
                 },
-                put:     (data, cb) => {
+                put: (data, cb) => {
                     REQ('put', url, data, cb);
                 },
-                post:    (data, cb) => {
+                post: (data, cb) => {
                     REQ('post', url, data, cb);
                 },
-                delete:  (data, cb) => {
+                delete: (data, cb) => {
                     REQ('delete', url, data, cb);
                 }
             };

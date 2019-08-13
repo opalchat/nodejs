@@ -1,8 +1,9 @@
 const credentials = require('./.credentials.json');
 
 var Opal = require('./api.js');
-var client = new Opal({ instance:"opalchat", host: "dev.opalchat.com:8080" });
-var api = client.api;
+var client = new Opal({ 
+    instance:"opalchat", host: "dev.opalchat.com:8080" });
+var api = client.request;
 
 var creds = credentials[process.argv[2]];
 if (!creds) return console.error("User not defined in credentials.json");
@@ -42,6 +43,45 @@ function start(){
     
     console.log("Authenticated!");
     var user = client.identity.user;
+    
+    // Connect to the websocket API.
+    client.connect({
+        
+        // Handle the opening of the connection.
+        "open": function(){
+            console.log('Connected!');
+             api('message').post({  
+                
+                channel_id: "test",
+                text: "Hello World!"
+                
+            }, (PostError, data)=>{
+                
+                if (PostError)  
+                    console.error(PostError.message);
+                
+                else if (data.error) 
+                    console.error(data.error);
+                
+                console.log('response:', data.response); 
+                
+            });
+            
+        },
+        
+        // Handle disconnection.
+        "close": function(){
+            console.log('Disconnected.');
+        },
+        
+        // Handle received messages.
+        "message": function(a){
+            console.log('[message]', a);
+        },
+        "error": function(){
+            
+        }
+    });
     
  // <my bot logic>
   
@@ -118,9 +158,10 @@ function start(){
     
     // Post message.
     /**
-    api('message', {channel_id:"test"}).post({  
+    api('message').post({  
         
-        text: "hello!"
+        channel_id: "test",
+        text: "Hello World!"
         
     }, (PostError, data)=>{
         
@@ -136,6 +177,7 @@ function start(){
     **/
     
     // Update message. 
+    /**
     api('message', {message_id:'645efa24cf2e3adbfc729f0ab11fa82a'}).put({
         
         'public': JSON.stringify({test:Date.now()})
@@ -155,6 +197,103 @@ function start(){
                 
         }); 
         
-    }); 
+    });
+    **/
+    
+    // Delete presence.
+    /**
+     api('presence', {
+        channel_id:"test", 
+        user_id:client.identity.user.user_id
+     }).delete((GetError, data)=>{
+        if (data.error) return console.error(data.error)
+        console.log(data.response);
+     }); 
+     **/
+     
+    // Get presences from a channel.
+    /**
+    api('presence', {channel_id:"test"}).get((GetError, data)=>{
+        if (data.error) return console.error(data.error);
+        console.log(data.response);
+    });
+     */
+    
+    // Post a presence.
+    /**
+    api('presence').post({channel_id:"test", type:"test", public:JSON.stringify({game:"minecraft"})}, (GetError, data)=>{
+        
+        if (data.error) return console.error(data.error);
+        console.log(data.response);
+         
+    });
+    **/
+    
+    // Get Subscriptions.
+    /**
+    api('subscription').get((GetError, data)=>{
+        
+        if (data.error) return console.error(data.error);
+        console.log(data.response);
+        
+    });
+    **/
+    
+    // Subscribe to a channel.
+    /**
+    api('subscription').post({channel_id:"test"}, (PostError, data)=>{
+        
+        if (data.error) return console.error(data.error);
+        console.log(data.response);
+        
+    });
+    **/
+    
+    // Unsubscribe from a channel.
+    /**
+    api('subscription', {channel_id:'test'}).delete((DeleteError, data)=>{
+        
+        if (data.error) return console.error(data.error);
+        console.log(data.response);
+        
+    });
+    **/
+
+    // List Notifications
+    /**
+    api('notifications', {channel_id:'test', user_id:client.identity.user.user_id }).get((GetError, data)=>{
+        
+        if (data.error) return console.error(data.error);
+        
+        data.response.notifications.forEach(notification=>{
+            console.log(notification.notification_id, notification.data.message.text);
+        })
+        
+    });
+    **/
+    
+    // Clear Notifications
+    /**
+    api('notifications', { user_id: client.identity.user.user_id }).delete((DeleteError, data)=>{
+        
+        if (data.error) return console.error(data.error);
+        
+        console.log(data.response);
+            
+    });
+    **/
+    
+     // Delete Channel Notifications
+    /**
+    api('notifications', { user_id: client.identity.user.user_id, channel_id: 'test' }).delete((DeleteError, data)=>{
+        
+        if (data.error) return console.error(data.error);
+        
+        console.log(data.response);
+            
+    });
+    **/
+    
+    
      
 }
