@@ -2,7 +2,7 @@ const credentials = require('./.credentials.json');
 
 var Opal = require('./api.js');
 var client = new Opal({ 
-    instance:"opalchat", host: "dev.opalchat.com:8080" });
+    instance:"opalchat", host: "beta.opalchat.com" });
 var api = client.request;
 
 var creds = credentials[process.argv[2]];
@@ -32,8 +32,7 @@ function whoami(cb){
         if (err) return console.error('request error:', err);
         if (data.error) return console.error('api error:', data.error);
         client.identity = data.identity;
-        if(cb) cb();
-            
+        if(cb) cb(); 
     });
     
 }
@@ -50,22 +49,19 @@ function start(){
         // Handle the opening of the connection.
         "open": function(){
             console.log('Connected!');
-             api('message').post({  
-                
-                channel_id: "test",
-                text: "Hello World!"
-                
-            }, (PostError, data)=>{
-                
-                if (PostError)  
-                    console.error(PostError.message);
-                
-                else if (data.error) 
-                    console.error(data.error);
-                
-                console.log('response:', data.response); 
-                
-            });
+            
+            setInterval(function(){
+                api('message').post({  
+                    channel_id: "test",
+                    text: "Hello World!"
+                }, (PostError, data)=>{
+                    if (PostError)  
+                        console.error(PostError.message);
+                    else if (data.error) 
+                        console.error(data.error);
+                    console.log('response:', data.response); 
+                });
+            },1000);
             
         },
         
@@ -78,7 +74,7 @@ function start(){
         "message": function(a){
             console.log('[message]', a);
         },
-        "error": function(){
+        "error": function(a){
             
         }
     });

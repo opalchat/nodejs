@@ -11,7 +11,7 @@ module.exports = function(config){
     var $O = {
         api_version:    "1.0",
         instance:       config.instance,
-        host:           (typeof config.host=='string'?config.host:'opalchat.com')
+        host:           (typeof config.host=='string'?config.host:'api.opalchat.com')
     };
     
     // Set a variable in the client.

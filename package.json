@@ -1,7 +1,7 @@
 {
   "name": "opaljs",
   "version": "1.0.0",
-  "description": "OpalChat JavaScript Client",
+  "description": "OpalChat NodeJS API",
   "main": "bot.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
